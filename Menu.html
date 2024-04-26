@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú del Restaurante</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+</head>
+<body>
+  <script>
+    // Menú del restaurante
+    const menu = {
+      desayuno: {
+        platosPrincipales: {
+          "panqueques": 8,
+          "huevos con bacon": 10,
+          "tostadas con tomate": 9
+        },
+        acompañamientos: {
+          "patatas fritas": 3,
+          "ensalada rusa": 4,
+          "yogur natural": 5
+        },
+        bebidas: ["agua", "zumo"]
+      },
+      almuerzo: {
+        platosPrincipales: {
+          "hamburguesa": 12,
+          "sandwich de pollo": 11,
+          "ensalada césar": 9
+        },
+        acompañamientos: {
+          "patatas fritas": 3,
+          "aros de cebolla": 4,
+          "ensalada": 3
+        },
+        bebidas: ["agua", "cerveza", "vino"]
+      },
+      cena: {
+        platosPrincipales: {
+          "filete": 20,
+          "salmón": 18,
+          "pasta": 15
+        },
+        acompañamientos: {
+          "puré de patata": 4,
+          "verduras en tempura": 5,
+          "pan de ajo": 3
+        },
+        bebidas: ["agua", "vino"]
+      }
+    };
+
+    // Función para mostrar el menú
+    function mostrarMenu(tipoMenu) {
+      const platosPrincipales = Object.keys(menu[tipoMenu].platosPrincipales);
+      const acompañamientos = Object.keys(menu[tipoMenu].acompañamientos);
+      const bebidas = menu[tipoMenu].bebidas;
+
+      let menuString = `Menú (${tipoMenu}):\n`;
+      menuString += "Platos Principales:\n";
+      platosPrincipales.forEach((item, index) => {
+        menuString += `${index + 1}. ${item} - $${menu[tipoMenu].platosPrincipales[item]}\n`;
+      });
+      menuString += "\nAcompañamientos:\n";
+      acompañamientos.forEach((item, index) => {
+        menuString += `${index + 1}. ${item} - $${menu[tipoMenu].acompañamientos[item]}\n`;
+      });
+      menuString += "\nBebidas:\n";
+      bebidas.forEach((item, index) => {
+        menuString += `${index + 1}. ${item}\n`;
+      });
+
+      alert(menuString);
+    }
+
+    // Función para calcular el costo total
+    function calcularTotal(platoPrincipal, acompañamiento1, acompañamiento2, bebida, tipoMenu) {
+      const precioPlatoPrincipal = menu[tipoMenu].platosPrincipales[platoPrincipal];
+      const precioAcompañamiento1 = acompañamiento1 !== "Sin acompañamiento" ? menu[tipoMenu].acompañamientos[acompañamiento1] : 0;
+      const precioAcompañamiento2 = acompañamiento2 !== "Sin acompañamiento" ? menu[tipoMenu].acompañamientos[acompañamiento2] : 0;
+      const precioBebida = bebida !== "Sin bebida" ? 2 : 0; // Precio fijo para todas las bebidas
+      
+      // Verificar si los platos y acompañamientos seleccionados existen en el menú
+      if (precioPlatoPrincipal === undefined || (acompañamiento1 !== "Sin acompañamiento" && precioAcompañamiento1 === undefined) || (acompañamiento2 !== "Sin acompañamiento" && precioAcompañamiento2 === undefined)) {
+        throw new Error("Uno o más elementos seleccionados no están en el menú.");
+      }
+
+      const costoTotal = precioPlatoPrincipal + precioAcompañamiento1 + precioAcompañamiento2 + precioBebida;
+      return costoTotal;
+    }
+
+    // Función para manejar la selección de un plato principal
+    function seleccionarPlatoPrincipal(tipoMenu) {
+      const platosPrincipales = Object.keys(menu[tipoMenu].platosPrincipales);
+      let eleccion = prompt("Por favor, selecciona un plato principal:\n" + platosPrincipales.map((item, index) => `${index + 1}. ${item}`).join("\n")).toLowerCase(); // Convertir a minúsculas
+
+      // Verificar si la elección es un número
+      if (!isNaN(eleccion)) {
+        const index = parseInt(eleccion) - 1;
+        if (index >= 0 && index < platosPrincipales.length) {
+          return platosPrincipales[index];
+        }
+      }
+
+      // Verificar si la elección está en el menú
+      if (!platosPrincipales.includes(eleccion)) {
+        alert("Esa opción no está en el menú. Por favor, inténtalo de nuevo.");
+        return seleccionarPlatoPrincipal(tipoMenu); // Llamada recursiva para seleccionar otra vez
+      }
+
+      alert("¡Buena elección!");
+      return eleccion;
+    }
+
+    // Función para manejar la selección de un acompañamiento
+    function seleccionarAcompañamiento(tipoMenu) {
+      const acompañamientos = Object.keys(menu[tipoMenu].acompañamientos);
+      let eleccion = prompt("Por favor, selecciona un acompañamiento:\n" + acompañamientos.map((item, index) => `${index + 1}. ${item}`).join("\n")).toLowerCase(); // Convertir a minúsculas
+
+      // Verificar si la elección es un número
+      if (!isNaN(eleccion)) {
+        const index = parseInt(eleccion) - 1;
+        if (index >= 0 && index < acompañamientos.length) {
+          return acompañamientos[index];
+        }
+      }
+
+      // Verificar si la elección está en el menú
+      if (!acompañamientos.includes(eleccion)) {
+        alert("Esa opción no está en el menú. Por favor, inténtalo de nuevo.");
+        return seleccionarAcompañamiento(tipoMenu); // Llamada recursiva para seleccionar otra vez
+      }
+
+      alert("¡Suena delicioso!");
+      return eleccion;
+    }
+
+    // Función para manejar la selección de una bebida
+    function seleccionarBebida(tipoMenu) {
+      const bebidas = menu[tipoMenu].bebidas;
+      let eleccion = prompt("Por favor, selecciona una bebida:\n" + bebidas.map((item, index) => `${index + 1}. ${item}`).join("\n")).toLowerCase(); // Convertir a minúsculas
+
+      // Verificar si la elección es un número
+      if (!isNaN(eleccion)) {
+        const index = parseInt(eleccion) - 1;
+        if (index >= 0 && index < bebidas.length) {
+          return bebidas[index];
+        }
+      }
+
+      // Verificar si la elección está en el menú
+      if (!bebidas.includes(eleccion)) {
+        alert("Esa opción no está en el menú. Por favor, inténtalo de nuevo.");
+        return seleccionarBebida(tipoMenu); // Llamada recursiva para seleccionar otra vez
+      }
+
+      alert("¡Refrescante elección!");
+      return eleccion;
+    }
+
+    // Función para mostrar el menú según la hora del día
+    function mostrarMenuSegunHora() {
+      const horaActual = moment().hour();
+      let tipoMenu;
+
+      if (horaActual >= 6 && horaActual < 12) {
+        tipoMenu = 'desayuno';
+      } else if (horaActual >= 12 && horaActual < 18) {
+        tipoMenu = 'almuerzo';
+      } else {
+        tipoMenu = 'cena';
+      }
+
+      mostrarMenu(tipoMenu);
+      hacerPedido(tipoMenu); // Llamar a hacerPedido después de mostrar el menú
+    }
+
+    // Función principal para manejar la orden
+    function hacerPedido(tipoMenu) {
+      const platoPrincipal = seleccionarPlatoPrincipal(tipoMenu);
+      
+      let acompañamiento1, acompañamiento2, bebida;
+      
+      // Preguntar al usuario si desea acompañamientos
+      const deseaAcompañamientos = confirm("¿Deseas seleccionar acompañamientos?");
+      
+      if (deseaAcompañamientos) {
+        acompañamiento1 = seleccionarAcompañamiento(tipoMenu);
+        
+        // Preguntar al usuario si desea seleccionar un segundo acompañamiento solo si se seleccionó uno en primer lugar
+        if (acompañamiento1 !== "Sin acompañamiento") {
+          const deseaSegundoAcompañamiento = confirm("¿Deseas seleccionar un segundo acompañamiento?");
+        
+          if (deseaSegundoAcompañamiento) {
+            acompañamiento2 = seleccionarAcompañamiento(tipoMenu);
+          } else {
+            acompañamiento2 = "Sin acompañamiento";
+          }
+        } else {
+          acompañamiento2 = "Sin acompañamiento";
+        }
+      } else {
+        acompañamiento1 = "Sin acompañamiento";
+        acompañamiento2 = "Sin acompañamiento";
+      }
+
+      // Preguntar al usuario si desea seleccionar una bebida
+      const deseaBebida = confirm("¿Deseas seleccionar una bebida?");
+      
+      if (deseaBebida) {
+        bebida = seleccionarBebida(tipoMenu);
+      } else {
+        bebida = "Sin bebida";
+      }
+
+      // Verificar si alguno de los acompañamientos no es "Sin acompañamiento"
+      if (acompañamiento1 !== "Sin acompañamiento" || acompañamiento2 !== "Sin acompañamiento" || bebida !== "Sin bebida") {
+        const costoTotal = calcularTotal(platoPrincipal, acompañamiento1, acompañamiento2, bebida, tipoMenu);
+      
+        // Obtener los precios de los platos seleccionados
+        const precioPlatoPrincipal = menu[tipoMenu].platosPrincipales[platoPrincipal];
+        const precioAcompañamiento1 = acompañamiento1 !== "Sin acompañamiento" ? menu[tipoMenu].acompañamientos[acompañamiento1] : 0;
+        const precioAcompañamiento2 = acompañamiento2 !== "Sin acompañamiento" ? menu[tipoMenu].acompañamientos[acompañamiento2] : 0;
+        const precioBebida = bebida !== "Sin bebida" ? 2 : 0; // Precio fijo para todas las bebidas
+      
+        // Mostrar los platos seleccionados con sus precios
+        const platosSeleccionados = `Plato principal: ${platoPrincipal} - $${precioPlatoPrincipal}\nAcompañamiento 1: ${acompañamiento1} - $${precioAcompañamiento1}\nAcompañamiento 2: ${acompañamiento2} - $${precioAcompañamiento2}\nBebida: ${bebida} - $${precioBebida}`;
+
+        alert(`Costo total: $${costoTotal}\n\n${platosSeleccionados}`);
+      } else {
+        // Si no se seleccionaron acompañamientos ni bebida, mostrar solo el costo del plato principal
+        const costoPlatoPrincipal = menu[tipoMenu].platosPrincipales[platoPrincipal];
+        alert(`Costo total: $${costoPlatoPrincipal}\n\nPlato principal: ${platoPrincipal} - $${costoPlatoPrincipal}`);
+      }
+    }
+
+    // Ejemplo de uso
+    try {
+      mostrarMenuSegunHora();
+    } catch (error) {
+      alert(error.message);
+    }
+  </script>
+</body>
+</html>
